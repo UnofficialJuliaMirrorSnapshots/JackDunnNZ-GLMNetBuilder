@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for JackDunnNZ/GLMNetBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: V26D3Dg52FLqoW1Rvs/rYMphx78LxS9fsYVfdjNWFflHccP8YObPBMzS9gsyNT8bYzCGFKg5teTpW84n+VZlUykvevtUDhrxy8tVG1P38lLW5Lii8009h9geuaGcRbuY/pHvX4uhZ1sxj6stWyRT7g2HW2i05+6IBScNM6LES3Lzgawm7fUwj2yqYnLEhW7jOD8AyzAIBMN73fc9nnFMcfYi1gnP8rOLAa3Zg5oRfvQIJ5dbQsk0rXXjMp6nlYGOwLaLTBxhNPn/SlZHJT+suMGdMJRX0VxXRHATa2/M4b+8cu3PKA+W2PKVQJQVHbIpzrchzS8/yPYD6T37dBAl66j8JdaC1iBK1rB0VYO40+VKgdJ1uOrV/21JyAq4hyrtrg2VM/LrszSkNJCjOutzuQY9buxjnGNkLNlsD0+VzGpUt0OJBzXvFs7Y+JP1blqO7chQQM/CG8AZOk5ofHu1rGZCm06QOzJVknCTa8CmCl8hGX2DPT18a5e6mkhEwdTlOfwSYy1bVFY+PSgP94bXIJL66hEjO2r11EXSBrOxABQEDiLxIl0ccoY43+mzUO29y5cHGhhVuzj82mLs1/r0WceGEVYWkyg9ny9XkAKAgnCxg7o/9Pz7/MpxJnvErbo6u+okesnXRWKwY2+wnODa46ZPxrW1dndDBwFsoh7RbGU=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: JackDunnNZ/GLMNetBuilder
+        tags: true
